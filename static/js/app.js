@@ -6,6 +6,9 @@ let state = {
     searchQuery: ''
 };
 
+// Shared updates tracking
+let sharedIds = new Set(JSON.parse(localStorage.getItem('shared_updates') || '[]'));
+
 // DOM Elements
 const btnRefresh = document.getElementById('btn-refresh');
 const btnExport = document.getElementById('btn-export');
@@ -124,6 +127,13 @@ function setupEventListeners() {
         }).catch(err => {
             console.error('Could not copy text: ', err);
         });
+    });
+
+    // Handle Tweet Button Click to track shared state
+    btnTweet.addEventListener('click', () => {
+        if (state.selectedUpdate) {
+            markUpdateAsShared(state.selectedUpdate.id);
+        }
     });
 }
 
@@ -248,7 +258,8 @@ function renderFeed() {
             const card = document.createElement('div');
             // Add custom modifier classes based on type for border accent on selection
             const typeClass = getCardTypeClass(update.type);
-            card.className = `update-card ${typeClass}`;
+            const isShared = sharedIds.has(update.id);
+            card.className = `update-card ${typeClass}${isShared ? ' shared' : ''}`;
             card.dataset.id = update.id;
             
             if (state.selectedUpdate && state.selectedUpdate.id === update.id) {
@@ -256,11 +267,13 @@ function renderFeed() {
             }
             
             const badgeClass = getBadgeClass(update.type);
+            const sharedBadgeHtml = isShared ? `<span class="badge badge-shared">✓ Shared</span>` : '';
             
             card.innerHTML = `
                 <div class="card-header">
                     <div class="header-left">
                         <span class="badge ${badgeClass}">${update.type}</span>
+                        ${sharedBadgeHtml}
                         <span class="card-date">${update.date}</span>
                     </div>
                     <button class="card-copy-btn" title="Copy this update text" data-id="${update.id}">
@@ -512,5 +525,18 @@ function toggleTheme() {
         themeIconSun.classList.add('hidden');
         themeIconMoon.classList.remove('hidden');
         showToast('Swapped to Dark Theme');
+    }
+}
+
+// Mark selected release note as shared
+function markUpdateAsShared(id) {
+    if (!sharedIds.has(id)) {
+        sharedIds.add(id);
+        localStorage.setItem('shared_updates', JSON.stringify([...sharedIds]));
+        
+        // Re-render feed to reflect the "Shared" state
+        renderFeed();
+        
+        showToast('Marked as shared! Opening X/Twitter Composer...');
     }
 }
