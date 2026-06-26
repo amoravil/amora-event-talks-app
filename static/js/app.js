@@ -8,6 +8,7 @@ let state = {
 
 // DOM Elements
 const btnRefresh = document.getElementById('btn-refresh');
+const btnExport = document.getElementById('btn-export');
 const btnRetry = document.getElementById('btn-retry');
 const feedList = document.getElementById('feed-list');
 const loadingState = document.getElementById('loading-state');
@@ -78,6 +79,7 @@ function updateProgressRing(percent, isOverLimit) {
 function setupEventListeners() {
     btnRefresh.addEventListener('click', fetchReleases);
     btnRetry.addEventListener('click', fetchReleases);
+    btnExport.addEventListener('click', exportToCSV);
     
     // Search
     searchInput.addEventListener('input', (e) => {
@@ -250,13 +252,31 @@ function renderFeed() {
             
             card.innerHTML = `
                 <div class="card-header">
-                    <span class="badge ${badgeClass}">${update.type}</span>
-                    <span class="card-date">${update.date}</span>
+                    <div class="header-left">
+                        <span class="badge ${badgeClass}">${update.type}</span>
+                        <span class="card-date">${update.date}</span>
+                    </div>
+                    <button class="card-copy-btn" title="Copy this update text" data-id="${update.id}">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="card-body">
                     ${update.html}
                 </div>
             `;
+            
+            // Add Copy Event to the button inside header
+            const copyBtn = card.querySelector('.card-copy-btn');
+            copyBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent card selection trigger
+                navigator.clipboard.writeText(update.clean_text).then(() => {
+                    showToast('Update text copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
             
             // Add Selection Event
             card.addEventListener('click', () => {
@@ -391,4 +411,73 @@ function showToast(message) {
         toast.classList.remove('show');
         setTimeout(() => toast.classList.add('hidden'), 300);
     }, 2500);
+}
+
+// Export Filtered Updates to CSV
+function exportToCSV() {
+    // Get currently filtered list
+    const filteredUpdates = state.updates.filter(update => {
+        const matchesSearch = 
+            update.clean_text.toLowerCase().includes(state.searchQuery) ||
+            update.type.toLowerCase().includes(state.searchQuery) ||
+            update.date.toLowerCase().includes(state.searchQuery);
+        
+        let matchesFilter = true;
+        if (state.activeFilter !== 'all') {
+            if (state.activeFilter === 'Breaking') {
+                matchesFilter = update.type === 'Breaking' || update.type === 'Issue';
+            } else {
+                matchesFilter = update.type === state.activeFilter;
+            }
+        }
+        return matchesSearch && matchesFilter;
+    });
+
+    if (filteredUpdates.length === 0) {
+        showToast('No updates to export!');
+        return;
+    }
+
+    const headers = ['Date', 'Type', 'Content', 'Link'];
+    
+    const escapeCSV = (str) => {
+        if (str === null || str === undefined) return '';
+        const stringified = String(str);
+        const escaped = stringified.replace(/"/g, '""');
+        if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
+            return `"${escaped}"`;
+        }
+        return escaped;
+    };
+
+    let csvRows = [];
+    csvRows.push(headers.map(escapeCSV).join(","));
+    
+    filteredUpdates.forEach(update => {
+        const row = [
+            update.date,
+            update.type,
+            update.clean_text,
+            update.link
+        ];
+        csvRows.push(row.map(escapeCSV).join(","));
+    });
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    
+    const filterName = state.activeFilter.toLowerCase();
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.setAttribute("download", `bigquery_releases_${filterName}_${dateStr}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showToast(`Exported ${filteredUpdates.length} items to CSV!`);
 }

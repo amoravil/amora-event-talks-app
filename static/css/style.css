@@ -146,6 +146,12 @@ body {
     align-items: center;
 }
 
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
 .brand {
     display: flex;
     align-items: center;
@@ -415,6 +421,40 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.card-copy-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0;
+}
+
+.update-card:hover .card-copy-btn {
+    opacity: 1;
+}
+
+.card-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--accent-cyan);
+}
+
+.card-copy-btn svg {
+    width: 14px;
+    height: 14px;
 }
 
 /* Badges */
