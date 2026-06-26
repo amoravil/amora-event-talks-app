@@ -1016,3 +1016,116 @@ body {
         border-right: none;
     }
 }
+
+/* Smooth transition for theme swapping */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Icon-only button helper */
+.btn-icon-only {
+    padding: 0.65rem;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Light Theme Variables */
+body.light-theme {
+    --bg-primary: #f3f4f6;       /* Light gray base */
+    --bg-secondary: #ffffff;     /* White card bg */
+    --bg-tertiary: #e5e7eb;      /* Light borders */
+    --text-primary: #111827;     /* Dark text */
+    --text-secondary: #374151;   /* Medium text */
+    --text-muted: #6b7280;       /* Muted text */
+
+    /* Glassmorphism for Light Mode */
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 41, 55, 0.06);
+
+    /* Orb Background adjustments */
+    --glow-cyan: rgba(6, 182, 212, 0.06);
+    --glow-purple: rgba(139, 92, 246, 0.06);
+}
+
+/* Specific Light Theme styling tweaks */
+body.light-theme .update-card {
+    background: rgba(255, 255, 255, 0.7);
+}
+body.light-theme .update-card:hover {
+    background: rgba(255, 255, 255, 0.95);
+}
+body.light-theme .update-card.active {
+    background: rgba(255, 255, 255, 0.95);
+}
+body.light-theme .textarea-wrapper {
+    background: rgba(255, 255, 255, 0.85);
+}
+body.light-theme .search-box input {
+    background: rgba(255, 255, 255, 0.85);
+    color: #111827;
+}
+body.light-theme .pill {
+    background: rgba(255, 255, 255, 0.8);
+}
+body.light-theme .pill:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #111827;
+}
+body.light-theme .btn-tweet-action {
+    background-color: #0f1419;
+    color: #ffffff;
+}
+body.light-theme .btn-tweet-action:hover {
+    background-color: #272c30;
+}
+body.light-theme .composer-card {
+    background: rgba(255, 255, 255, 0.85);
+}
+body.light-theme .composer-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.light-theme .textarea-wrapper textarea {
+    color: #111827;
+}
+body.light-theme .text-tools {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(0, 0, 0, 0.02);
+}
+body.light-theme .progress-ring-bg {
+    stroke: #e5e7eb;
+    stroke-opacity: 1;
+}
+body.light-theme .app-header {
+    background: rgba(243, 244, 246, 0.8);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.light-theme .app-footer {
+    background: rgba(243, 244, 246, 0.8);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.light-theme .toast {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--accent-cyan);
+    color: #111827;
+    box-shadow: 0 8px 24px rgba(6, 182, 212, 0.15);
+}
+body.light-theme .twitter-badge {
+    background: rgba(0, 0, 0, 0.05);
+    color: #0f1419;
+}
+body.light-theme .composer-empty .illustration {
+    color: rgba(0, 0, 0, 0.05);
+}
+body.light-theme .original-link-wrapper {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+body.light-theme .card-body code {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1f2937;
+}
+

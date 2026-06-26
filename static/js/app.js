@@ -10,6 +10,11 @@ let state = {
 const btnRefresh = document.getElementById('btn-refresh');
 const btnExport = document.getElementById('btn-export');
 const btnRetry = document.getElementById('btn-retry');
+
+// Theme Elements
+const themeToggle = document.getElementById('theme-toggle');
+const themeIconMoon = document.getElementById('theme-icon-moon');
+const themeIconSun = document.getElementById('theme-icon-sun');
 const feedList = document.getElementById('feed-list');
 const loadingState = document.getElementById('loading-state');
 const errorState = document.getElementById('error-state');
@@ -48,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+    initTheme();
     setupEventListeners();
     fetchReleases();
     initProgressRing();
@@ -80,6 +86,7 @@ function setupEventListeners() {
     btnRefresh.addEventListener('click', fetchReleases);
     btnRetry.addEventListener('click', fetchReleases);
     btnExport.addEventListener('click', exportToCSV);
+    themeToggle.addEventListener('click', toggleTheme);
     
     // Search
     searchInput.addEventListener('input', (e) => {
@@ -480,4 +487,30 @@ function exportToCSV() {
     URL.revokeObjectURL(url);
     
     showToast(`Exported ${filteredUpdates.length} items to CSV!`);
+}
+
+// Initial Theme Preferences Setup
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeIconMoon.classList.add('hidden');
+        themeIconSun.classList.remove('hidden');
+    }
+}
+
+// Toggle Theme Handler
+function toggleTheme() {
+    const isLightTheme = document.body.classList.toggle('light-theme');
+    if (isLightTheme) {
+        localStorage.setItem('theme', 'light');
+        themeIconMoon.classList.add('hidden');
+        themeIconSun.classList.remove('hidden');
+        showToast('Swapped to Light Theme');
+    } else {
+        localStorage.setItem('theme', 'dark');
+        themeIconSun.classList.add('hidden');
+        themeIconMoon.classList.remove('hidden');
+        showToast('Swapped to Dark Theme');
+    }
 }
